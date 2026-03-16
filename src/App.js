@@ -1,4 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+// Google Apps Script URL for syncing links
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxyc06DOBtkRAi4VdJ6d1j_vDa1UrQlQd5udthPTgTeI9XSplG5QBTAOM-IDiglUi7xzQ/exec";
+
+// Secret key for API authorization (must match Google Apps Script)
+//const AUTHORIZED_KEY = "xyzzvb";
 
 const profile = {
   strengths: [
@@ -456,10 +463,166 @@ function IntensityBar({ level }) {
 
 export default function App() {
   const [active, setActive] = useState(1);
+  const [authorizedKey, setAuthorizedKey] = useState("");
   const [tab, setTab] = useState("topics");
   const [view, setView] = useState("roadmap");
+  const [gdriveLinkInput, setGdriveLinkInput] = useState("");
+  const [gdriveLinks, setGdriveLinks] = useState(() => {
+    // Load links from localStorage (fallback)
+    const saved = localStorage.getItem("gdriveLinks");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [isFilesAuthenticated, setIsFilesAuthenticated] = useState(false);
+  const [filesKeyInput, setFilesKeyInput] = useState("");
   const current = months[active - 1];
   const phase = phaseColors[current.phase] || { border: "#888" };
+
+  // Handle files authentication
+  const handleFilesAuth = async () => {
+    try {
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getKey`);
+      const data = await response.json();
+
+      console.log("Key from sheet:", data.key); // see what sheet returned
+      console.log("Match?", filesKeyInput === data.key);
+
+      if (filesKeyInput === data.key) {
+        setAuthorizedKey(data.key);
+        setIsFilesAuthenticated(true);
+        setFilesKeyInput("");
+        fetchLinksFromSheet(data.key);
+      } else {
+        alert("Invalid key. Please try again.");
+        setFilesKeyInput("");
+      }
+    } catch (error) {
+      alert("Could not verify key. Check your internet connection.");
+      setFilesKeyInput("");
+    }
+  };
+
+  // Save links to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("gdriveLinks", JSON.stringify(gdriveLinks));
+  }, [gdriveLinks]);
+
+  // Load links from Google Sheet on component mount
+  useEffect(() => {
+    fetchLinksFromSheet();
+  }, []);
+
+  // Fetch links from Google Sheet
+  const fetchLinksFromSheet = async (key) => {
+    const k = key || authorizedKey;
+    try {
+      const response = await fetch(
+        `${GOOGLE_SCRIPT_URL}?action=getAll&key=${k}`,
+      );
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        setGdriveLinks(data);
+      }
+    } catch (error) {
+      console.log("Using local storage (Google Sheet sync failed)");
+    }
+  };
+
+  // Save link to Google Sheet
+  const saveToSheet = async (link) => {
+    try {
+      const params = new URLSearchParams({
+        action: "add",
+        key: authorizedKey,
+        id: link.id,
+        url: link.url,
+        name: link.name || "",
+        addedAt: link.addedAt,
+      });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params}`);
+    } catch (error) {
+      console.log("Link saved locally (Sheet sync failed)");
+    }
+  };
+
+  // Delete link from Google Sheet
+  const deleteFromSheet = async (id) => {
+    try {
+      const params = new URLSearchParams({
+        action: "delete",
+        key: authorizedKey,
+        id: id,
+      });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params}`);
+    } catch (error) {
+      console.log("Link deleted locally (Sheet sync failed)");
+    }
+  };
+
+  // Add Google Drive link
+  const handleAddLink = () => {
+    const link = gdriveLinkInput.trim();
+    if (!link) {
+      alert("Please enter a link");
+      return;
+    }
+
+    // Validate it's a valid URL
+    try {
+      new URL(link);
+    } catch {
+      alert("Please enter a valid URL");
+      return;
+    }
+
+    const name = prompt("Enter a name for this file:", "Google Drive File");
+    if (!name) return; // cancel if user dismisses prompt
+
+    const newLink = {
+      id: String(Date.now()),
+      url: link,
+      name: name,
+      addedAt: new Date().toLocaleString(),
+    };
+
+    setGdriveLinks((prev) => [newLink, ...prev]);
+    saveToSheet(newLink);
+    setGdriveLinkInput("");
+  };
+
+  // Delete link
+  const deleteLink = (id) => {
+    setGdriveLinks((prev) => prev.filter((l) => l.id !== id));
+    deleteFromSheet(id);
+  };
+
+  const updateNameInSheet = async (id, name) => {
+    try {
+      const params = new URLSearchParams({
+        action: "rename",
+        key: authorizedKey,
+        id: id,
+        name: name,
+      });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params}`);
+    } catch (error) {
+      console.log("Rename saved locally (Sheet sync failed)");
+    }
+  };
+
+  // Rename link (for easier identification)
+  const renameLink = (id) => {
+    const link = gdriveLinks.find((l) => l.id === id);
+    const newName = prompt(
+      "Enter a name for this file:",
+      link.name || "Google Drive File",
+    );
+    if (newName) {
+      setGdriveLinks((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, name: newName } : l)),
+      );
+      updateNameInSheet(id, newName); // ← add this line
+    }
+  };
 
   return (
     <div
@@ -560,7 +723,7 @@ export default function App() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              {["roadmap", "profile"].map((v) => (
+              {["roadmap", "profile", "files"].map((v) => (
                 <button
                   key={v}
                   className="btn"
@@ -1419,6 +1582,337 @@ export default function App() {
               </span>
             </div>
           </>
+        )}
+
+        {view === "files" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {!isFilesAuthenticated ? (
+              <div
+                style={{
+                  background: "#161616",
+                  border: "2px solid #e8c547",
+                  borderRadius: 12,
+                  padding: "40px 24px",
+                  textAlign: "center",
+                  maxWidth: 500,
+                  margin: "40px auto",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 20,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 36,
+                      color: "#e8c547",
+                    }}
+                  >
+                    🔐
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <div
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 600,
+                        color: "#e8e2d9",
+                        marginBottom: 8,
+                      }}
+                    >
+                      Access Protected
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "#7a7060",
+                      }}
+                    >
+                      Enter your secret key to access your files
+                    </div>
+                  </div>
+                  <input
+                    type="password"
+                    placeholder="Enter secret key..."
+                    value={filesKeyInput}
+                    onChange={(e) => setFilesKeyInput(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleFilesAuth()}
+                    style={{
+                      width: "100%",
+                      padding: "12px 14px",
+                      borderRadius: 6,
+                      border: "1px solid #2a2a2a",
+                      background: "#1a1a1a",
+                      color: "#e8e2d9",
+                      fontFamily: "monospace",
+                      fontSize: 13,
+                      outline: "none",
+                    }}
+                  />
+                  <button
+                    onClick={handleFilesAuth}
+                    style={{
+                      width: "100%",
+                      padding: "12px 20px",
+                      borderRadius: 6,
+                      border: "1px solid #e8c547",
+                      background: "#e8c547",
+                      color: "#0f0f0f",
+                      fontFamily: "monospace",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    Unlock
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div
+                  style={{
+                    background: "#161616",
+                    border: "2px dashed #e8c547",
+                    borderRadius: 12,
+                    padding: "40px 24px",
+                    textAlign: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 12,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 36,
+                        color: "#e8c547",
+                      }}
+                    >
+                      🔗
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                      <div
+                        style={{
+                          fontSize: 16,
+                          fontWeight: 600,
+                          color: "#e8e2d9",
+                          marginBottom: 4,
+                        }}
+                      >
+                        Add Google Drive Files
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: "#7a7060",
+                        }}
+                      >
+                        Paste your publicly shared Google Drive link
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 8,
+                        width: "100%",
+                        maxWidth: 500,
+                      }}
+                    >
+                      <input
+                        type="text"
+                        placeholder="Paste Google Drive share link..."
+                        value={gdriveLinkInput}
+                        onChange={(e) => setGdriveLinkInput(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && handleAddLink()}
+                        style={{
+                          flex: 1,
+                          padding: "10px 14px",
+                          borderRadius: 6,
+                          border: "1px solid #2a2a2a",
+                          background: "#1a1a1a",
+                          color: "#e8e2d9",
+                          fontFamily: "monospace",
+                          fontSize: 12,
+                          outline: "none",
+                        }}
+                      />
+                      <button
+                        onClick={handleAddLink}
+                        style={{
+                          padding: "10px 20px",
+                          borderRadius: 6,
+                          border: "1px solid #e8c547",
+                          background: "#e8c547",
+                          color: "#0f0f0f",
+                          fontFamily: "monospace",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        Add Link
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {gdriveLinks.length > 0 ? (
+                  <div
+                    style={{
+                      background: "#161616",
+                      border: "1px solid #2a2a2a",
+                      borderRadius: 12,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        background: "#1a1a1a",
+                        borderBottom: "1px solid #2a2a2a",
+                        padding: "16px 24px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontFamily: "monospace",
+                          fontSize: 11,
+                          color: "#e8c547",
+                          letterSpacing: 2,
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        🔗 Your Files ({gdriveLinks.length})
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 0,
+                      }}
+                    >
+                      {gdriveLinks.map((link) => (
+                        <div
+                          key={link.id}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 12,
+                            padding: "14px 20px",
+                            borderBottom: "1px solid #222",
+                            background: "#1a1a1a",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          <div style={{ flex: 1 }}>
+                            <div
+                              style={{
+                                fontSize: 13,
+                                color: "#c0b8a8",
+                                fontWeight: 500,
+                                marginBottom: 4,
+                              }}
+                            >
+                              {link.name || "Google Drive File"}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 10,
+                                color: "#555",
+                                fontFamily: "monospace",
+                              }}
+                            >
+                              Added {link.addedAt}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => window.open(link.url, "_blank")}
+                            style={{
+                              background: "#47b8e830",
+                              color: "#47b8e8",
+                              border: "1px solid #47b8e850",
+                              borderRadius: 4,
+                              padding: "6px 12px",
+                              fontSize: 11,
+                              cursor: "pointer",
+                              fontFamily: "monospace",
+                              fontWeight: 600,
+                              transition: "all 0.2s ease",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            OPEN
+                          </button>
+                          <button
+                            onClick={() => renameLink(link.id)}
+                            style={{
+                              background: "#e8c54730",
+                              color: "#e8c547",
+                              border: "1px solid #e8c54750",
+                              borderRadius: 4,
+                              padding: "6px 12px",
+                              fontSize: 11,
+                              cursor: "pointer",
+                              fontFamily: "monospace",
+                              fontWeight: 600,
+                              transition: "all 0.2s ease",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            RENAME
+                          </button>
+                          <button
+                            onClick={() => deleteLink(link.id)}
+                            style={{
+                              background: "#e8476f30",
+                              color: "#e8476f",
+                              border: "1px solid #e8476f50",
+                              borderRadius: 4,
+                              padding: "6px 12px",
+                              fontSize: 11,
+                              cursor: "pointer",
+                              fontFamily: "monospace",
+                              fontWeight: 600,
+                              transition: "all 0.2s ease",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            DELETE
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      background: "#161616",
+                      border: "1px solid #2a2a2a",
+                      borderRadius: 12,
+                      padding: "40px 24px",
+                      textAlign: "center",
+                      color: "#555",
+                    }}
+                  >
+                    <div style={{ fontSize: 14 }}>No links added yet</div>
+                    <div style={{ fontSize: 12, marginTop: 8 }}>
+                      Paste a Google Drive sharing link above
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>
