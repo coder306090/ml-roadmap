@@ -483,9 +483,6 @@ export default function App() {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getKey`);
       const data = await response.json();
 
-      console.log("Key from sheet:", data.key); // see what sheet returned
-      console.log("Match?", filesKeyInput === data.key);
-
       if (filesKeyInput === data.key) {
         setAuthorizedKey(data.key);
         setIsFilesAuthenticated(true);
