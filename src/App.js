@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 // Google Apps Script URL for syncing links
 const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxyc06DOBtkRAi4VdJ6d1j_vDa1UrQlQd5udthPTgTeI9XSplG5QBTAOM-IDiglUi7xzQ/exec";
+  "https://script.google.com/macros/s/AKfycbx_tVyjVLRkMUT5xvIp5ROrkEwt3YcqPwmMFHHpnIj4EaZmdgO6fmEEQm_2BZIXWGq7wg/exec";
 
 // Secret key for API authorization (must match Google Apps Script)
 //const AUTHORIZED_KEY = "xyzzvb";
@@ -467,11 +467,7 @@ export default function App() {
   const [tab, setTab] = useState("topics");
   const [view, setView] = useState("roadmap");
   const [gdriveLinkInput, setGdriveLinkInput] = useState("");
-  const [gdriveLinks, setGdriveLinks] = useState(() => {
-    // Load links from localStorage (fallback)
-    const saved = localStorage.getItem("gdriveLinks");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [gdriveLinks, setGdriveLinks] = useState([]);
   const [isFilesAuthenticated, setIsFilesAuthenticated] = useState(false);
   const [filesKeyInput, setFilesKeyInput] = useState("");
   const current = months[active - 1];
@@ -482,12 +478,11 @@ export default function App() {
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getKey`);
       const data = await response.json();
-
       if (filesKeyInput === data.key) {
         setAuthorizedKey(data.key);
         setIsFilesAuthenticated(true);
         setFilesKeyInput("");
-        fetchLinksFromSheet(data.key);
+        await fetchLinksFromSheet(data.key); // ← fetch list right after login
       } else {
         alert("Invalid key. Please try again.");
         setFilesKeyInput("");
@@ -497,11 +492,6 @@ export default function App() {
       setFilesKeyInput("");
     }
   };
-
-  // Save links to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem("gdriveLinks", JSON.stringify(gdriveLinks));
-  }, [gdriveLinks]);
 
   // Load links from Google Sheet on component mount
   useEffect(() => {
@@ -515,12 +505,18 @@ export default function App() {
       const response = await fetch(
         `${GOOGLE_SCRIPT_URL}?action=getAll&key=${k}`,
       );
-      const data = await response.json();
+      const text = await response.text();
+      console.log("Raw response:", text);
+      const data = JSON.parse(text);
+      console.log("Parsed data:", data);
       if (Array.isArray(data) && data.length > 0) {
         setGdriveLinks(data);
+        console.log("Links set:", data);
+      } else {
+        console.log("No links found or empty array");
       }
     } catch (error) {
-      console.log("Using local storage (Google Sheet sync failed)");
+      console.log("Fetch error:", error);
     }
   };
 
