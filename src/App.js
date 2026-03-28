@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // Google Apps Script URL for syncing links
 const GOOGLE_SCRIPT_URL =
@@ -461,6 +461,40 @@ const phaseColors = {
 
 const typeIcons = { video: "▶", book: "📖", course: "🎓", project: "⚙" };
 
+function Spinner({ size = 20, label }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        verticalAlign: "middle",
+      }}
+      role={label ? "status" : undefined}
+      aria-label={label || undefined}
+    >
+      <span
+        aria-hidden
+        style={{
+          display: "inline-block",
+          width: size,
+          height: size,
+          border: "2px solid #333",
+          borderTopColor: "#e8c547",
+          borderRadius: "50%",
+          animation: "app-spin 0.55s linear infinite",
+          flexShrink: 0,
+        }}
+      />
+      {label ? (
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#888" }}>
+          {label}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
 function IntensityBar({ level }) {
   return (
     <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
@@ -498,11 +532,19 @@ export default function App() {
   const [gdriveLinks, setGdriveLinks] = useState([]);
   const [isFilesAuthenticated, setIsFilesAuthenticated] = useState(false);
   const [filesKeyInput, setFilesKeyInput] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [linksLoading, setLinksLoading] = useState(false);
+  const [savingLink, setSavingLink] = useState(false);
   const current = months[active - 1];
   const phase = phaseColors[current.phase] || { border: "#888" };
 
-  // Handle files authentication
+  // Unlock full app immediately on valid key; sync Drive links in background (feels faster)
   const handleFilesAuth = async () => {
+    if (!filesKeyInput.trim()) {
+      alert("Please enter your secret key.");
+      return;
+    }
+    setAuthLoading(true);
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getKey`);
       const data = await response.json();
@@ -510,7 +552,7 @@ export default function App() {
         setAuthorizedKey(data.key);
         setIsFilesAuthenticated(true);
         setFilesKeyInput("");
-        await fetchLinksFromSheet(data.key); // ← fetch list right after login
+        void fetchLinksFromSheet(data.key);
       } else {
         alert("Invalid key. Please try again.");
         setFilesKeyInput("");
@@ -518,33 +560,28 @@ export default function App() {
     } catch (error) {
       alert("Could not verify key. Check your internet connection.");
       setFilesKeyInput("");
+    } finally {
+      setAuthLoading(false);
     }
   };
 
-  // Load links from Google Sheet on component mount
-  useEffect(() => {
-    fetchLinksFromSheet();
-  }, []);
-
-  // Fetch links from Google Sheet
   const fetchLinksFromSheet = async (key) => {
     const k = key || authorizedKey;
+    if (!k) return;
+    setLinksLoading(true);
     try {
       const response = await fetch(
-        `${GOOGLE_SCRIPT_URL}?action=getAll&key=${k}`,
+        `${GOOGLE_SCRIPT_URL}?action=getAll&key=${encodeURIComponent(k)}`,
       );
       const text = await response.text();
-      console.log("Raw response:", text);
       const data = JSON.parse(text);
-      console.log("Parsed data:", data);
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         setGdriveLinks(data);
-        console.log("Links set:", data);
-      } else {
-        console.log("No links found or empty array");
       }
     } catch (error) {
       console.log("Fetch error:", error);
+    } finally {
+      setLinksLoading(false);
     }
   };
 
@@ -579,15 +616,13 @@ export default function App() {
     }
   };
 
-  // Add Google Drive link
-  const handleAddLink = () => {
+  const handleAddLink = async () => {
     const link = gdriveLinkInput.trim();
     if (!link) {
       alert("Please enter a link");
       return;
     }
 
-    // Validate it's a valid URL
     try {
       new URL(link);
     } catch {
@@ -596,7 +631,7 @@ export default function App() {
     }
 
     const name = prompt("Enter a name for this file:", "Google Drive File");
-    if (!name) return; // cancel if user dismisses prompt
+    if (!name) return;
 
     const newLink = {
       id: String(Date.now()),
@@ -606,8 +641,13 @@ export default function App() {
     };
 
     setGdriveLinks((prev) => [newLink, ...prev]);
-    saveToSheet(newLink);
     setGdriveLinkInput("");
+    setSavingLink(true);
+    try {
+      await saveToSheet(newLink);
+    } finally {
+      setSavingLink(false);
+    }
   };
 
   // Delete link
@@ -655,18 +695,137 @@ export default function App() {
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
+        @keyframes app-spin { to { transform: rotate(360deg); } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
         .btn { transition: all 0.2s ease; cursor: pointer; border: none; outline: none; }
-        .btn:hover { transform: translateY(-2px); }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
         .tab-btn { transition: all 0.15s ease; cursor: pointer; border: none; outline: none; }
         .row-item { transition: padding-left 0.15s ease; }
         .row-item:hover { padding-left: 10px !important; }
       `}</style>
 
+      {!isFilesAuthenticated ? (
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+          }}
+        >
+          <div
+            style={{
+              background: "#161616",
+              border: "2px solid #e8c547",
+              borderRadius: 12,
+              padding: "40px 24px",
+              textAlign: "center",
+              maxWidth: 500,
+              width: "100%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 20,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 36,
+                  color: "#e8c547",
+                }}
+              >
+                🔐
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 600,
+                    color: "#e8e2d9",
+                    marginBottom: 8,
+                  }}
+                >
+                  Access protected
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: "#7a7060",
+                  }}
+                >
+                  Enter your secret key to unlock the roadmap, profile, and
+                  files
+                </div>
+              </div>
+              <input
+                type="password"
+                placeholder="Enter secret key..."
+                value={filesKeyInput}
+                disabled={authLoading}
+                onChange={(e) => setFilesKeyInput(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && !authLoading && handleFilesAuth()
+                }
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: 6,
+                  border: "1px solid #2a2a2a",
+                  background: "#1a1a1a",
+                  color: "#e8e2d9",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 13,
+                  outline: "none",
+                  opacity: authLoading ? 0.7 : 1,
+                }}
+              />
+              <button
+                type="button"
+                disabled={authLoading}
+                onClick={handleFilesAuth}
+                className="btn"
+                style={{
+                  width: "100%",
+                  padding: "12px 20px",
+                  borderRadius: 6,
+                  border: "1px solid #e8c547",
+                  background: "#e8c547",
+                  color: "#0f0f0f",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 10,
+                  minHeight: 46,
+                }}
+              >
+                {authLoading ? (
+                  <>
+                    <Spinner size={18} />
+                    Verifying…
+                  </>
+                ) : (
+                  "Unlock"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
       <div
         style={{
           background: "#141414",
@@ -1611,94 +1770,6 @@ export default function App() {
 
         {view === "files" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {!isFilesAuthenticated ? (
-              <div
-                style={{
-                  background: "#161616",
-                  border: "2px solid #e8c547",
-                  borderRadius: 12,
-                  padding: "40px 24px",
-                  textAlign: "center",
-                  maxWidth: 500,
-                  margin: "40px auto",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 20,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 36,
-                      color: "#e8c547",
-                    }}
-                  >
-                    🔐
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 600,
-                        color: "#e8e2d9",
-                        marginBottom: 8,
-                      }}
-                    >
-                      Access Protected
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 13,
-                        color: "#7a7060",
-                      }}
-                    >
-                      Enter your secret key to access your files
-                    </div>
-                  </div>
-                  <input
-                    type="password"
-                    placeholder="Enter secret key..."
-                    value={filesKeyInput}
-                    onChange={(e) => setFilesKeyInput(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleFilesAuth()}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: 6,
-                      border: "1px solid #2a2a2a",
-                      background: "#1a1a1a",
-                      color: "#e8e2d9",
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: 13,
-                      outline: "none",
-                    }}
-                  />
-                  <button
-                    onClick={handleFilesAuth}
-                    style={{
-                      width: "100%",
-                      padding: "12px 20px",
-                      borderRadius: 6,
-                      border: "1px solid #e8c547",
-                      background: "#e8c547",
-                      color: "#0f0f0f",
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: 13,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    Unlock
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
                 <div
                   style={{
                     background: "#161616",
@@ -1756,8 +1827,11 @@ export default function App() {
                         type="text"
                         placeholder="Paste Google Drive share link..."
                         value={gdriveLinkInput}
+                        disabled={savingLink}
                         onChange={(e) => setGdriveLinkInput(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && handleAddLink()}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" && !savingLink && handleAddLink()
+                        }
                         style={{
                           flex: 1,
                           padding: "10px 14px",
@@ -1768,10 +1842,14 @@ export default function App() {
                           fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 12,
                           outline: "none",
+                          opacity: savingLink ? 0.7 : 1,
                         }}
                       />
                       <button
+                        type="button"
+                        disabled={savingLink}
                         onClick={handleAddLink}
+                        className="btn"
                         style={{
                           padding: "10px 20px",
                           borderRadius: 6,
@@ -1783,15 +1861,83 @@ export default function App() {
                           fontWeight: 700,
                           cursor: "pointer",
                           transition: "all 0.2s ease",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          minWidth: 110,
+                          justifyContent: "center",
                         }}
                       >
-                        Add Link
+                        {savingLink ? (
+                          <>
+                            <Spinner size={14} />
+                            Saving
+                          </>
+                        ) : (
+                          "Add Link"
+                        )}
                       </button>
                     </div>
                   </div>
                 </div>
 
-                {gdriveLinks.length > 0 ? (
+                {linksLoading && gdriveLinks.length > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      background: "#1a1a1a",
+                      border: "1px solid #e8c54730",
+                      borderRadius: 8,
+                      padding: "10px 14px",
+                    }}
+                  >
+                    <Spinner size={16} />
+                    <span
+                      style={{
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 10,
+                        color: "#888",
+                        letterSpacing: 1,
+                      }}
+                    >
+                      Refreshing link list…
+                    </span>
+                  </div>
+                )}
+
+                {linksLoading && gdriveLinks.length === 0 ? (
+                  <div
+                    style={{
+                      background: "#161616",
+                      border: "1px solid #2a2a2a",
+                      borderRadius: 12,
+                      padding: "48px 24px",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 14,
+                      }}
+                    >
+                      <Spinner size={28} />
+                      <span
+                        style={{
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: 11,
+                          color: "#666",
+                        }}
+                      >
+                        Loading saved links…
+                      </span>
+                    </div>
+                  </div>
+                ) : gdriveLinks.length > 0 ? (
                   <div
                     style={{
                       background: "#161616",
@@ -1817,6 +1963,11 @@ export default function App() {
                         }}
                       >
                         🔗 Your Files ({gdriveLinks.length})
+                        {linksLoading ? (
+                          <span style={{ color: "#666", marginLeft: 8 }}>
+                            · updating
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                     <div
@@ -1935,11 +2086,11 @@ export default function App() {
                     </div>
                   </div>
                 )}
-              </>
-            )}
           </div>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 }
