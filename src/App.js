@@ -1,8 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 // Google Apps Script URL for syncing links
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbx_tVyjVLRkMUT5xvIp5ROrkEwt3YcqPwmMFHHpnIj4EaZmdgO6fmEEQm_2BZIXWGq7wg/exec";
+
+// sessionStorage: unlock expires after 15 minutes (per successful sign-in / restore)
+const AUTH_SESSION_KEY = "ml-roadmap-auth-key";
+const SESSION_DURATION_MS = 15 * 60 * 1000;
+
+function readAuthSession() {
+  try {
+    const raw = sessionStorage.getItem(AUTH_SESSION_KEY);
+    if (!raw) return null;
+    if (!raw.startsWith("{")) {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+      return null;
+    }
+    const p = JSON.parse(raw);
+    const k = p.k;
+    const e = p.e;
+    if (typeof k !== "string" || !k || typeof e !== "number") {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+      return null;
+    }
+    if (Date.now() >= e) {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+      return null;
+    }
+    return { key: k, expiresAt: e };
+  } catch {
+    try {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+    } catch {
+      /* ignore */
+    }
+    return null;
+  }
+}
+
+function writeAuthSession(key) {
+  sessionStorage.setItem(
+    AUTH_SESSION_KEY,
+    JSON.stringify({ k: key, e: Date.now() + SESSION_DURATION_MS }),
+  );
+}
 
 // Secret key for API authorization (must match Google Apps Script)
 //const AUTHORIZED_KEY = "xyzzvb";
@@ -524,6 +565,7 @@ function IntensityBar({ level }) {
 }
 
 export default function App() {
+  const [hydrated, setHydrated] = useState(false);
   const [active, setActive] = useState(1);
   const [authorizedKey, setAuthorizedKey] = useState("");
   const [tab, setTab] = useState("topics");
@@ -535,8 +577,98 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(false);
   const [linksLoading, setLinksLoading] = useState(false);
   const [savingLink, setSavingLink] = useState(false);
+  const expirySignOutDoneRef = useRef(false);
   const current = months[active - 1];
   const phase = phaseColors[current.phase] || { border: "#888" };
+
+  const handleSignOut = useCallback((reason) => {
+    if (reason === "expired" && expirySignOutDoneRef.current) {
+      return;
+    }
+    if (reason === "expired") {
+      expirySignOutDoneRef.current = true;
+    } else {
+      expirySignOutDoneRef.current = false;
+    }
+
+    try {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+    } catch {
+      /* ignore */
+    }
+    setAuthorizedKey("");
+    setIsFilesAuthenticated(false);
+    setGdriveLinks([]);
+    setGdriveLinkInput("");
+    setView("roadmap");
+    setFilesKeyInput("");
+    if (reason === "expired") {
+      alert("Session expired after 15 minutes. Please sign in again.");
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const session = readAuthSession();
+      if (session) {
+        setAuthorizedKey(session.key);
+        setIsFilesAuthenticated(true);
+        setLinksLoading(true);
+        (async () => {
+          try {
+            const response = await fetch(
+              `${GOOGLE_SCRIPT_URL}?action=getAll&key=${encodeURIComponent(session.key)}`,
+            );
+            const text = await response.text();
+            const data = JSON.parse(text);
+            if (Array.isArray(data)) {
+              setGdriveLinks(data);
+            }
+          } catch (error) {
+            console.log("Session restore fetch error:", error);
+          } finally {
+            setLinksLoading(false);
+          }
+        })();
+      }
+    } catch {
+      /* private mode / disabled storage */
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isFilesAuthenticated) return;
+
+    const enforceExpiry = () => {
+      if (!readAuthSession()) {
+        handleSignOut("expired");
+      }
+    };
+
+    const session = readAuthSession();
+    if (!session) {
+      handleSignOut("expired");
+      return;
+    }
+
+    const delay = Math.max(0, session.expiresAt - Date.now());
+    const timeoutId = setTimeout(enforceExpiry, delay);
+    const intervalId = setInterval(enforceExpiry, 30000);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        enforceExpiry();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [isFilesAuthenticated, authorizedKey, handleSignOut]);
 
   // Unlock full app immediately on valid key; sync Drive links in background (feels faster)
   const handleFilesAuth = async () => {
@@ -549,6 +681,12 @@ export default function App() {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getKey`);
       const data = await response.json();
       if (filesKeyInput === data.key) {
+        expirySignOutDoneRef.current = false;
+        try {
+          writeAuthSession(data.key);
+        } catch {
+          /* ignore */
+        }
         setAuthorizedKey(data.key);
         setIsFilesAuthenticated(true);
         setFilesKeyInput("");
@@ -684,6 +822,27 @@ export default function App() {
       updateNameInSheet(id, newName); // ← add this line
     }
   };
+
+  if (!hydrated) {
+    return (
+      <div
+        style={{
+          fontFamily: "'Georgia', serif",
+          background: "#0f0f0f",
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#e8e2d9",
+        }}
+      >
+        <style>{`
+          @keyframes app-spin { to { transform: rotate(360deg); } }
+        `}</style>
+        <Spinner size={28} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -904,11 +1063,12 @@ export default function App() {
                 ))}
               </div>
             </div>
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
               {["roadmap", "profile", "files"].map((v) => (
                 <button
                   key={v}
                   className="btn"
+                  type="button"
                   onClick={() => setView(v)}
                   style={{
                     background: view === v ? "#e8c547" : "#1e1e1e",
@@ -926,6 +1086,25 @@ export default function App() {
                   {v}
                 </button>
               ))}
+              <button
+                type="button"
+                className="btn"
+                onClick={handleSignOut}
+                style={{
+                  background: "#1e1e1e",
+                  color: "#888",
+                  border: "1px solid #333",
+                  borderRadius: 6,
+                  padding: "7px 12px",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 9,
+                  fontWeight: 500,
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                }}
+              >
+                Sign out
+              </button>
             </div>
           </div>
         </div>
