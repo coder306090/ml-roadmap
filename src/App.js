@@ -426,7 +426,7 @@ const phaseColors = {
   "Math + CS Foundations": { border: "#e8c547" },
   "ML Theory": { border: "#47b8e8" },
   "Deep Learning Theory": { border: "#e8476f" },
-  Specialization: { border: "#47e8a0" },
+  "Specialization": { border: "#47e8a0" },
   "Portfolio & Research": { border: "#a047e8" },
   "Application Prep": { border: "#e88047" },
 };
@@ -449,7 +449,7 @@ function IntensityBar({ level }) {
       ))}
       <span
         style={{
-          fontFamily: "monospace",
+          fontFamily: "'JetBrains Mono', monospace",
           fontSize: 9,
           color: "#555",
           marginLeft: 4,
@@ -620,13 +620,14 @@ export default function App() {
   return (
     <div
       style={{
-        fontFamily: "Georgia, serif",
+        fontFamily: "'Georgia', serif",
         background: "#0f0f0f",
         minHeight: "100vh",
         color: "#e8e2d9",
       }}
     >
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
@@ -648,7 +649,7 @@ export default function App() {
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <div
             style={{
-              fontFamily: "monospace",
+              fontFamily: "'JetBrains Mono', monospace",
               fontSize: 10,
               color: "#e8c547",
               letterSpacing: 4,
@@ -656,7 +657,7 @@ export default function App() {
               textTransform: "uppercase",
             }}
           >
-            ML Roadmap → KIT / Saarland / TU Berlin / RWTH
+            ML Roadmap → TUM / KIT / Saarland / Ulm
           </div>
           <div
             style={{
@@ -670,6 +671,7 @@ export default function App() {
             <div>
               <div
                 style={{
+                  fontFamily: "'Playfair Display', serif",
                   fontSize: 24,
                   fontWeight: 900,
                   color: "#f5f0e8",
@@ -693,7 +695,7 @@ export default function App() {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 9,
                         color: "#555",
                         letterSpacing: 2,
@@ -706,7 +708,7 @@ export default function App() {
                       style={{
                         fontSize: 12,
                         color: "#b0a898",
-                        fontFamily: "monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                       }}
                     >
                       {s.val}
@@ -727,7 +729,7 @@ export default function App() {
                     border: `1px solid ${view === v ? "#e8c547" : "#2e2e2e"}`,
                     borderRadius: 6,
                     padding: "7px 14px",
-                    fontFamily: "monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 10,
                     fontWeight: view === v ? 700 : 400,
                     letterSpacing: 1,
@@ -764,7 +766,7 @@ export default function App() {
               >
                 <div
                   style={{
-                    fontFamily: "monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 9,
                     color: "#47e8a0",
                     letterSpacing: 3,
@@ -818,7 +820,7 @@ export default function App() {
               >
                 <div
                   style={{
-                    fontFamily: "monospace",
+                    fontFamily: "'JetBrains Mono', monospace",
                     fontSize: 9,
                     color: "#e8476f",
                     letterSpacing: 3,
@@ -863,7 +865,7 @@ export default function App() {
                         </span>
                         <span
                           style={{
-                            fontFamily: "monospace",
+                            fontFamily: "'JetBrains Mono', monospace",
                             fontSize: 8,
                             background:
                               g.risk === "high"
@@ -911,7 +913,7 @@ export default function App() {
             >
               <div
                 style={{
-                  fontFamily: "monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   color: "#555",
                   letterSpacing: 3,
@@ -952,7 +954,7 @@ export default function App() {
                           border: `1px solid ${u.color}50`,
                           borderRadius: 4,
                           padding: "2px 7px",
-                          fontFamily: "monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 8,
                           color: u.color,
                           letterSpacing: 1,
@@ -964,7 +966,7 @@ export default function App() {
                       </div>
                       <div
                         style={{
-                          fontFamily: "monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 9,
                           color: "#444",
                         }}
@@ -1008,7 +1010,7 @@ export default function App() {
             >
               <div
                 style={{
-                  fontFamily: "monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   color: "#e8c547",
                   letterSpacing: 3,
@@ -1040,7 +1042,7 @@ export default function App() {
                     <span
                       style={{
                         color: "#e8c547",
-                        fontFamily: "monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 10,
                         marginTop: 3,
                         flexShrink: 0,
@@ -1096,7 +1098,7 @@ export default function App() {
                       border: `1px solid ${isActive ? p.border : isDone ? `${p.border}50` : "#2a2a2a"}`,
                       borderRadius: 6,
                       padding: "8px 14px",
-                      fontFamily: "monospace",
+                      fontFamily: "'JetBrains Mono', monospace",
                       fontSize: 11,
                       fontWeight: isActive ? 700 : 400,
                       letterSpacing: 1,
@@ -1116,7 +1118,7 @@ export default function App() {
                 borderRadius: 8,
                 padding: "10px 14px",
                 marginBottom: 16,
-                fontFamily: "monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 11,
                 color: "#888",
                 lineHeight: 1.6,
@@ -1161,7 +1163,7 @@ export default function App() {
                         border: `1px solid ${phase.border}50`,
                         borderRadius: 4,
                         padding: "2px 9px",
-                        fontFamily: "monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 9,
                         color: phase.border,
                         letterSpacing: 2,
@@ -1176,7 +1178,7 @@ export default function App() {
                         border: "1px solid #2e2e2e",
                         borderRadius: 4,
                         padding: "2px 9px",
-                        fontFamily: "monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 9,
                         color: "#666",
                         letterSpacing: 1,
@@ -1187,6 +1189,7 @@ export default function App() {
                   </div>
                   <div
                     style={{
+                      fontFamily: "'Playfair Display', serif",
                       fontSize: 20,
                       fontWeight: 700,
                       color: "#f5f0e8",
@@ -1200,7 +1203,7 @@ export default function App() {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 9,
                         color: "#555",
                         letterSpacing: 2,
@@ -1213,6 +1216,7 @@ export default function App() {
                 </div>
                 <div
                   style={{
+                    fontFamily: "'Playfair Display', serif",
                     fontSize: 44,
                     lineHeight: 1,
                     color: `${phase.border}50`,
@@ -1239,7 +1243,7 @@ export default function App() {
                       color: tab === t ? phase.border : "#444",
                       borderBottom: `2px solid ${tab === t ? phase.border : "transparent"}`,
                       padding: "10px 14px",
-                      fontFamily: "monospace",
+                      fontFamily: "'JetBrains Mono', monospace",
                       fontSize: 10,
                       letterSpacing: 2,
                       textTransform: "uppercase",
@@ -1274,7 +1278,7 @@ export default function App() {
                         <span
                           style={{
                             color: phase.border,
-                            fontFamily: "monospace",
+                            fontFamily: "'JetBrains Mono', monospace",
                             fontSize: 11,
                             marginTop: 3,
                             flexShrink: 0,
@@ -1322,7 +1326,7 @@ export default function App() {
                             border: `1px solid ${phase.border}50`,
                             borderRadius: 4,
                             padding: "3px 8px",
-                            fontFamily: "monospace",
+                            fontFamily: "'JetBrains Mono', monospace",
                             fontSize: 9,
                             color: phase.border,
                             letterSpacing: 1,
@@ -1357,7 +1361,7 @@ export default function App() {
                     >
                       <span
                         style={{
-                          fontFamily: "monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 10,
                           color: phase.border,
                           flexShrink: 0,
@@ -1424,7 +1428,7 @@ export default function App() {
                           </div>
                           <div
                             style={{
-                              fontFamily: "monospace",
+                              fontFamily: "'JetBrains Mono', monospace",
                               fontSize: 9,
                               color: "#555",
                               marginTop: 2,
@@ -1453,7 +1457,7 @@ export default function App() {
             >
               <div
                 style={{
-                  fontFamily: "monospace",
+                  fontFamily: "'JetBrains Mono', monospace",
                   fontSize: 9,
                   color: "#444",
                   letterSpacing: 3,
@@ -1491,7 +1495,7 @@ export default function App() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontFamily: "monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 8,
                           color: isActive
                             ? "#0f0f0f"
@@ -1543,7 +1547,7 @@ export default function App() {
                     />
                     <span
                       style={{
-                        fontFamily: "monospace",
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 9,
                         color: "#555",
                       }}
@@ -1561,7 +1565,7 @@ export default function App() {
                 background: "#141414",
                 border: "1px solid #1e1e1e",
                 borderRadius: 8,
-                fontFamily: "monospace",
+                fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 11,
                 color: "#555",
                 lineHeight: 1.7,
@@ -1640,7 +1644,7 @@ export default function App() {
                       border: "1px solid #2a2a2a",
                       background: "#1a1a1a",
                       color: "#e8e2d9",
-                      fontFamily: "monospace",
+                      fontFamily: "'JetBrains Mono', monospace",
                       fontSize: 13,
                       outline: "none",
                     }}
@@ -1654,7 +1658,7 @@ export default function App() {
                       border: "1px solid #e8c547",
                       background: "#e8c547",
                       color: "#0f0f0f",
-                      fontFamily: "monospace",
+                      fontFamily: "'JetBrains Mono', monospace",
                       fontSize: 13,
                       fontWeight: 700,
                       cursor: "pointer",
@@ -1733,7 +1737,7 @@ export default function App() {
                           border: "1px solid #2a2a2a",
                           background: "#1a1a1a",
                           color: "#e8e2d9",
-                          fontFamily: "monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 12,
                           outline: "none",
                         }}
@@ -1746,7 +1750,7 @@ export default function App() {
                           border: "1px solid #e8c547",
                           background: "#e8c547",
                           color: "#0f0f0f",
-                          fontFamily: "monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 12,
                           fontWeight: 700,
                           cursor: "pointer",
@@ -1777,7 +1781,7 @@ export default function App() {
                     >
                       <div
                         style={{
-                          fontFamily: "monospace",
+                          fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 11,
                           color: "#e8c547",
                           letterSpacing: 2,
@@ -1822,7 +1826,7 @@ export default function App() {
                               style={{
                                 fontSize: 10,
                                 color: "#555",
-                                fontFamily: "monospace",
+                                fontFamily: "'JetBrains Mono', monospace",
                               }}
                             >
                               Added {link.addedAt}
@@ -1838,7 +1842,7 @@ export default function App() {
                               padding: "6px 12px",
                               fontSize: 11,
                               cursor: "pointer",
-                              fontFamily: "monospace",
+                              fontFamily: "'JetBrains Mono', monospace",
                               fontWeight: 600,
                               transition: "all 0.2s ease",
                               whiteSpace: "nowrap",
@@ -1856,7 +1860,7 @@ export default function App() {
                               padding: "6px 12px",
                               fontSize: 11,
                               cursor: "pointer",
-                              fontFamily: "monospace",
+                              fontFamily: "'JetBrains Mono', monospace",
                               fontWeight: 600,
                               transition: "all 0.2s ease",
                               whiteSpace: "nowrap",
@@ -1874,7 +1878,7 @@ export default function App() {
                               padding: "6px 12px",
                               fontSize: 11,
                               cursor: "pointer",
-                              fontFamily: "monospace",
+                              fontFamily: "'JetBrains Mono', monospace",
                               fontWeight: 600,
                               transition: "all 0.2s ease",
                               whiteSpace: "nowrap",
