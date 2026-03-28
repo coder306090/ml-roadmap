@@ -170,16 +170,27 @@ const months = [
       {
         name: "📺 Andrew Ng – ML Specialization (YouTube, free) — revision of Géron book, Courses 1–2 only",
         type: "video",
+        url: "https://www.coursera.org/specializations/machine-learning-introduction",
       },
-      { name: "3Blue1Brown – Probability series (YouTube)", type: "video" },
+      {
+        name: "3Blue1Brown – Probability series (YouTube)",
+        type: "video",
+        url: "https://www.youtube.com/playlist?list=PLzq7ODHVQ5og8CgHPxIIWv5O_oMqF19WI",
+      },
       {
         name: "Blitzstein & Hwang – Intro to Probability (free PDF)",
         type: "book",
+        url: "https://projects.iq.harvard.edu/stat110/youtube",
       },
-      { name: "NeetCode 150 – DSA problems (neetcode.io)", type: "project" },
+      {
+        name: "NeetCode 150 – DSA problems (neetcode.io)",
+        type: "project",
+        url: "https://neetcode.io/",
+      },
       {
         name: "StatQuest – Bayes, MLE, distributions (YouTube)",
         type: "video",
+        url: "https://www.youtube.com/c/joshstarmer",
       },
     ],
     weekplan: [
@@ -214,12 +225,21 @@ const months = [
       "Head start: Bishop PRML Ch 1–2 (probability review + decision theory)",
     ],
     resources: [
-      { name: "Karpathy – micrograd walkthrough (YouTube)", type: "project" },
+      {
+        name: "Karpathy – micrograd walkthrough (YouTube)",
+        type: "project",
+        url: "https://www.youtube.com/watch?v=VMj-3S1tku0",
+      },
       {
         name: "Boyd & Vandenberghe – Convex Optimization Ch 1–3 (free PDF)",
         type: "book",
+        url: "https://web.stanford.edu/~boyd/cvxbook/",
       },
-      { name: "Bishop – PRML Ch 1–2 (begin early)", type: "book" },
+      {
+        name: "Bishop – PRML Ch 1–2 (begin early)",
+        type: "book",
+        url: "https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/",
+      },
     ],
     weekplan: [
       "Week 1: Matrix calculus — Jacobians, Hessians",
@@ -254,24 +274,36 @@ const months = [
       "🆕 LOR groundwork: email your best undergrad professor this month — share your roadmap, keep warm",
     ],
     resources: [
-      { name: "Bishop – PRML (free PDF, all chapters)", type: "book" },
+      {
+        name: "Bishop – PRML (free PDF, all chapters)",
+        type: "book",
+        url: "https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/",
+      },
       {
         name: "🎓 deeplearning.ai – Deep Learning Specialization (Coursera, ~$49, certificate)",
         type: "course",
+        url: "https://www.deeplearning.ai/courses/deep-learning-specialization/",
       },
       {
         name: "📺 Stanford CS231n – Deep Learning for CV (YouTube, free) — start Week 1",
         type: "video",
+        url: "https://www.youtube.com/playlist?list=PL3FW7Lu3iJvJJbFJBSv6g22cpZaNCSDzb",
       },
       {
         name: "deeplearning.ai – Deep Learning Specialization (Coursera, auditable free)",
         type: "course",
+        url: "https://www.deeplearning.ai/courses/deep-learning-specialization/",
       },
       {
         name: "Shalev-Shwartz & Ben-David – Understanding ML (free PDF)",
         type: "book",
+        url: "https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/",
       },
-      { name: "Papers With Code – CV milestone papers list", type: "project" },
+      {
+        name: "Papers With Code – CV milestone papers list",
+        type: "project",
+        url: "https://paperswithcode.com/task/image-classification",
+      },
     ],
     weekplan: [
       "Week 1: PRML Ch 1–2 + deeplearning.ai Course 1 + CS231n Lectures 1–3 + email undergrad professor",
@@ -306,23 +338,35 @@ const months = [
       "🆕 Start fast.ai Practical Deep Learning Part 1 — explicitly accepted by Saarland as supplementary qualification",
     ],
     resources: [
-      { name: "Karpathy – nanoGPT & makemore (YouTube series)", type: "video" },
-      { name: "Prince – Understanding Deep Learning (free PDF)", type: "book" },
+      {
+        name: "Karpathy – nanoGPT & makemore (YouTube series)",
+        type: "video",
+        url: "https://www.youtube.com/playlist?list=PLAqhIr5yRmaPqGVULG9X_xNrObFUdK-eq",
+      },
+      {
+        name: "Prince – Understanding Deep Learning (free PDF)",
+        type: "book",
+        url: "https://udlbook.com/udlbook.pdf",
+      },
       {
         name: "🎓 fast.ai – Practical Deep Learning Part 1 (free certificate)",
         type: "course",
+        url: "https://course.fast.ai/",
       },
       {
         name: "📺 Stanford CS231n – Lectures 13–16 (YouTube, complete the series)",
         type: "video",
+        url: "https://www.youtube.com/playlist?list=PL3FW7Lu3iJvJJbFJBSv6g22cpZaNCSDzb",
       },
       {
         name: "ViT paper: 'An Image is Worth 16x16 Words' (Dosovitskiy 2020)",
         type: "book",
+        url: "https://arxiv.org/abs/2010.11929",
       },
       {
         name: "U-Net paper: 'Convolutional Networks for Biomedical Image Segmentation'",
         type: "book",
+        url: "https://arxiv.org/abs/1505.04597",
       },
     ],
     weekplan: [
@@ -363,26 +407,32 @@ const months = [
       {
         name: "IELTS Official Practice Tests / TOEFL Official Guide (ets.org)",
         type: "course",
+        url: "https://www.ets.org/toefl.html",
       },
       {
         name: "DETR paper: 'End-to-End Object Detection with Transformers' (Carion 2020)",
         type: "book",
+        url: "https://arxiv.org/abs/2005.12872",
       },
       {
         name: "NeRF paper: 'Representing Scenes as Neural Radiance Fields' (Mildenhall 2020)",
         type: "book",
+        url: "https://arxiv.org/abs/2003.08934",
       },
       {
         name: "Sutton & Barto – RL: An Introduction Ch 1–3 (free PDF)",
         type: "book",
+        url: "https://incompleteideas.net/book/the-book-2nd.html",
       },
       {
         name: "HuggingFace Diffusers library — diffusion models in practice",
         type: "project",
+        url: "https://huggingface.co/docs/diffusers/index",
       },
       {
         name: "Papers With Code – CV + AI state-of-the-art tracker",
         type: "project",
+        url: "https://paperswithcode.com/",
       },
     ],
     weekplan: [
@@ -420,19 +470,30 @@ const months = [
       "Request LORs formally — professor (academic) + SE manager (professional)",
     ],
     resources: [
-      { name: "ETS GRE Official Guide (ets.org/gre)", type: "book" },
-      { name: "Magoosh GRE Vocabulary Flashcards (free app)", type: "course" },
+      {
+        name: "ETS GRE Official Guide (ets.org/gre)",
+        type: "book",
+        url: "https://www.ets.org/gre.html",
+      },
+      {
+        name: "Magoosh GRE Vocabulary Flashcards (free app)",
+        type: "course",
+        url: "https://magoosh.com/gre/",
+      },
       {
         name: "🎓 fast.ai – Practical Deep Learning Part 2 (free certificate)",
         type: "course",
+        url: "https://course.fast.ai/",
       },
       {
         name: "MPI-INF: gvv.mpi-inf.mpg.de (Theobalt), d2.mpi-inf.mpg.de (Schiele)",
         type: "project",
+        url: "https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning",
       },
       {
         name: "Weights & Biases quickstart (wandb.ai/quickstart)",
         type: "project",
+        url: "https://wandb.ai/quickstart",
       },
     ],
     weekplan: [
@@ -471,14 +532,28 @@ const months = [
       {
         name: "🚨 APS India portal — aps-india.de (apply Week 1 of September)",
         type: "project",
+        url: "https://www.aps-india.de/",
       },
       {
         name: "Saarland application portal — both Visual Computing + DSAI",
         type: "project",
+        url: "https://www.uni-saarland.de/en/study/programmes/apply.html",
       },
-      { name: "DAAD Scholarship portal (daad.de)", type: "project" },
-      { name: "anabin.kmk.org – grade equivalency tool", type: "project" },
-      { name: "IELTS Official Practice Tests", type: "course" },
+      {
+        name: "DAAD Scholarship portal (daad.de)",
+        type: "project",
+        url: "https://www.daad.de/en/",
+      },
+      {
+        name: "anabin.kmk.org – grade equivalency tool",
+        type: "project",
+        url: "https://anabin.kmk.org/",
+      },
+      {
+        name: "IELTS Official Practice Tests",
+        type: "course",
+        url: "https://www.ielts.org/",
+      },
     ],
     weekplan: [
       "Week 1: APS application submitted + GRE score received + SOP Visual Computing finalised",
@@ -865,6 +940,14 @@ export default function App() {
         .tab-btn { transition: all 0.15s ease; cursor: pointer; border: none; outline: none; }
         .row-item { transition: padding-left 0.15s ease; }
         .row-item:hover { padding-left: 10px !important; }
+        .resource-row-link:hover {
+          border-color: #3a3a3a !important;
+          background: #1e1e1e !important;
+        }
+        .resource-row-link:focus-visible {
+          outline: 2px solid #e8c547;
+          outline-offset: 2px;
+        }
       `}</style>
 
       {!isFilesAuthenticated ? (
@@ -1753,60 +1836,111 @@ export default function App() {
                   <div
                     style={{ display: "flex", flexDirection: "column", gap: 8 }}
                   >
-                    {current.resources.map((r, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          display: "flex",
-                          gap: 10,
-                          alignItems: "center",
-                          background: "#1a1a1a",
-                          border: "1px solid #2a2a2a",
-                          borderRadius: 7,
-                          padding: "10px 14px",
-                        }}
-                      >
-                        <div
+                    {current.resources.map((r, i) => {
+                      const rowInner = (
+                        <>
+                          <div
+                            style={{
+                              width: 28,
+                              height: 28,
+                              borderRadius: 6,
+                              background: `${phase.border}18`,
+                              border: `1px solid ${phase.border}35`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 13,
+                              flexShrink: 0,
+                            }}
+                            aria-hidden
+                          >
+                            {typeIcons[r.type]}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div
+                              style={{
+                                fontSize: 13,
+                                color: "#c0b0a0",
+                                lineHeight: 1.4,
+                              }}
+                            >
+                              {r.name}
+                            </div>
+                            <div
+                              style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: 9,
+                                color: "#555",
+                                marginTop: 2,
+                                letterSpacing: 1,
+                                textTransform: "uppercase",
+                              }}
+                            >
+                              {r.type}
+                              {r.url ? (
+                                <span style={{ color: "#444", marginLeft: 6 }}>
+                                  · opens in new tab
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
+                          {r.url ? (
+                            <span
+                              style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: 10,
+                                color: "#555",
+                                flexShrink: 0,
+                              }}
+                              aria-hidden
+                            >
+                              ↗
+                            </span>
+                          ) : null}
+                        </>
+                      );
+
+                      return r.url ? (
+                        <a
+                          key={i}
+                          href={r.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="resource-row-link"
+                          title={`Open: ${r.name}`}
                           style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: 6,
-                            background: `${phase.border}18`,
-                            border: `1px solid ${phase.border}35`,
                             display: "flex",
+                            gap: 10,
                             alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: 13,
-                            flexShrink: 0,
+                            background: "#1a1a1a",
+                            border: "1px solid #2a2a2a",
+                            borderRadius: 7,
+                            padding: "10px 14px",
+                            textDecoration: "none",
+                            color: "inherit",
+                            transition:
+                              "border-color 0.15s ease, background 0.15s ease",
                           }}
                         >
-                          {typeIcons[r.type]}
+                          {rowInner}
+                        </a>
+                      ) : (
+                        <div
+                          key={i}
+                          style={{
+                            display: "flex",
+                            gap: 10,
+                            alignItems: "center",
+                            background: "#1a1a1a",
+                            border: "1px solid #2a2a2a",
+                            borderRadius: 7,
+                            padding: "10px 14px",
+                          }}
+                        >
+                          {rowInner}
                         </div>
-                        <div>
-                          <div
-                            style={{
-                              fontSize: 13,
-                              color: "#c0b0a0",
-                              lineHeight: 1.4,
-                            }}
-                          >
-                            {r.name}
-                          </div>
-                          <div
-                            style={{
-                              fontFamily: "'JetBrains Mono', monospace",
-                              fontSize: 9,
-                              color: "#555",
-                              marginTop: 2,
-                              letterSpacing: 1,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {r.type}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
