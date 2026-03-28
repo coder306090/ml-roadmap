@@ -126,6 +126,10 @@ const months = [
       "🆕 Python fluency: move from Java mindset — list comprehensions, generators, numpy idioms",
     ],
     resources: [
+      {
+        name: "📺 Andrew Ng – ML Specialization (YouTube, free) — revision of Géron book, Courses 1–2 only",
+        type: "video",
+      },
       { name: "3Blue1Brown – Probability series (YouTube)", type: "video" },
       {
         name: "Blitzstein & Hwang – Intro to Probability (free PDF)",
@@ -138,13 +142,13 @@ const months = [
       },
     ],
     weekplan: [
-      "Week 1: Probability axioms, Bayes + 5 LeetCode easy problems",
-      "Week 2: Distributions, MLE derivation + 5 LeetCode easy/medium",
+      "Week 1: ML Specialization Course 1 (revision) + Probability axioms + 5 LeetCode easy",
+      "Week 2: ML Specialization Course 2 (revision) + Distributions, MLE derivation + 5 LeetCode",
       "Week 3: Covariance matrices, info theory + trees & graphs in Python",
       "Week 4: Review all + 10 LeetCode problems total done this month",
     ],
     milestone:
-      "Derive MLE for linear regression + solve 15 LeetCode problems (easy/medium)",
+      "ML Specialization Courses 1–2 done (revision) + derive MLE for linear regression + 15 LeetCode solved",
   },
   {
     id: 2,
@@ -204,26 +208,38 @@ const months = [
       "Ch 6: Kernel methods, SVM — derive margin maximization + kernel trick",
       "Ch 8–9: Graphical models, EM algorithm — implement GMM from scratch",
       "Bias-variance tradeoff — formal derivation, not just intuition",
-      "🆕 CV Paper Track (1/week): AlexNet (2012) → VGG (2014) → ResNet (2015) → read & summarise each",
-      "🆕 Start CV paper notes repo on GitHub — 1 paragraph summary per paper, running log",
+      "🆕 Start deeplearning.ai Deep Learning Specialization (Coursera) — run parallel to PRML, 1 hr/day",
+      "🆕 CV Paper Track (1/week): AlexNet (2012) → VGG (2014) → ResNet (2015) → summarise each",
+      "🆕 LOR groundwork: email your best undergrad professor this month — share your roadmap, keep warm",
     ],
     resources: [
       { name: "Bishop – PRML (free PDF, all chapters)", type: "book" },
+      {
+        name: "🎓 deeplearning.ai – Deep Learning Specialization (Coursera, ~$49, certificate)",
+        type: "course",
+      },
+      {
+        name: "📺 Stanford CS231n – Deep Learning for CV (YouTube, free) — start Week 1",
+        type: "video",
+      },
+      {
+        name: "deeplearning.ai – Deep Learning Specialization (Coursera, auditable free)",
+        type: "course",
+      },
       {
         name: "Shalev-Shwartz & Ben-David – Understanding ML (free PDF)",
         type: "book",
       },
       { name: "Papers With Code – CV milestone papers list", type: "project" },
-      { name: "Caltech CS156 – Learning from Data (YouTube)", type: "video" },
     ],
     weekplan: [
-      "Week 1: PRML Ch 1–2 + read & summarise AlexNet paper",
-      "Week 2: PRML Ch 3–4 + read & summarise VGG paper",
-      "Week 3: SVMs + kernel methods + read & summarise ResNet paper",
-      "Week 4: EM + GMM from scratch + read & summarise one more CV milestone paper",
+      "Week 1: PRML Ch 1–2 + deeplearning.ai Course 1 + CS231n Lectures 1–3 + email undergrad professor",
+      "Week 2: PRML Ch 3–4 + deeplearning.ai Course 2 + CS231n Lectures 4–6 + summarise AlexNet + VGG",
+      "Week 3: SVMs + kernel methods + deeplearning.ai Course 3 + CS231n Lectures 7–9 + summarise ResNet",
+      "Week 4: EM + GMM from scratch + finish deeplearning.ai Specialization + CS231n Lectures 10–12",
     ],
     milestone:
-      "GMM with EM from scratch + 4 CV papers read and summarised in GitHub notes repo",
+      "GMM from scratch + deeplearning.ai certificate earned + CS231n first half done + professor contacted for LOR",
   },
   {
     id: 4,
@@ -244,26 +260,38 @@ const months = [
       "Transformer architecture — implement encoder + decoder in PyTorch",
       "Build character-level language model (nanoGPT style) — core portfolio project",
       "🆕 CV Architecture track: CNN fundamentals → BatchNorm → ResNet skip connections",
-      "🆕 Vision Transformer (ViT) — read paper + implement in PyTorch (Transformers → images)",
-      "🆕 CV Papers (1/week): GAN (2014) → DCGAN → read & understand generative CV foundations",
+      "🆕 Vision Transformer (ViT) — read paper + implement in PyTorch — CV Project 1",
+      "🆕 U-Net segmentation — implement from scratch, train on small dataset — CV Project 2 (Saarland explicitly lists segmentation)",
+      "🆕 Start fast.ai Practical Deep Learning Part 1 — explicitly accepted by Saarland as supplementary qualification",
     ],
     resources: [
       { name: "Karpathy – nanoGPT & makemore (YouTube series)", type: "video" },
       { name: "Prince – Understanding Deep Learning (free PDF)", type: "book" },
       {
+        name: "🎓 fast.ai – Practical Deep Learning Part 1 (free certificate)",
+        type: "course",
+      },
+      {
+        name: "📺 Stanford CS231n – Lectures 13–16 (YouTube, complete the series)",
+        type: "video",
+      },
+      {
         name: "ViT paper: 'An Image is Worth 16x16 Words' (Dosovitskiy 2020)",
         type: "book",
       },
-      { name: "The Annotated Transformer – Harvard NLP blog", type: "project" },
+      {
+        name: "U-Net paper: 'Convolutional Networks for Biomedical Image Segmentation'",
+        type: "book",
+      },
     ],
     weekplan: [
-      "Week 1: Backprop derivation + implement ResNet from scratch in PyTorch",
-      "Week 2: Attention mechanism from scratch + read ViT paper",
-      "Week 3: Implement ViT in PyTorch — connects Transformer directly to CV",
-      "Week 4: Train mini character-level GPT + push all code to GitHub with READMEs",
+      "Week 1: Backprop derivation + implement ResNet from scratch + fast.ai lessons 1–3 + CS231n Lec 13–14",
+      "Week 2: Attention mechanism + ViT implementation (CV Project 1) + fast.ai lessons 4–6 + CS231n Lec 15–16",
+      "Week 3: U-Net from scratch — train on small segmentation dataset (CV Project 2) + fast.ai lessons 7–8",
+      "Week 4: mini-GPT + push all 3 projects to GitHub with clean READMEs + finish fast.ai Part 1 certificate",
     ],
     milestone:
-      "ViT implemented in PyTorch + mini-GPT working — two flagship projects live on GitHub",
+      "3 projects on GitHub (ViT, U-Net, mini-GPT) + fast.ai Part 1 certificate + CS231n fully completed",
   },
   {
     id: 5,
@@ -281,15 +309,14 @@ const months = [
     topics: [
       "🚨 IELTS / TOEFL — take exam this month (IELTS 7.0+ or TOEFL 95+, MOI letter NOT accepted at Saarland)",
       "── CV TRACK (Weeks 1–2) ──",
-      "Object Detection: YOLO → DETR (end-to-end detection with Transformers)",
-      "Segmentation: SAM (Segment Anything Model) — read paper + run inference",
-      "3D Vision intro: NeRF — read paper, understand volumetric rendering concept",
-      "CV Project: Build image classifier or object detector with ViT — push to GitHub",
+      "CV Project 3: DETR object detection pipeline in PyTorch — detection distinct from June's segmentation + classification",
+      "3D Reconstruction: run Instant-NGP or tiny-nerf on your own photos — write detailed README (covers Saarland's 3D reconstruction requirement)",
+      "SAM (Segment Anything) — read paper, run inference on custom images",
       "── AI TRACK (Weeks 3–4) ──",
       "Generative Models: VAE theory + diffusion models overview (connects to DSAI curriculum)",
       "Reinforcement Learning: Sutton & Barto Ch 1–3, Q-learning — conceptual depth",
-      "Read 2 papers per track (4 total) — write 1-paragraph structured summaries",
-      "Identify 3 MPI-INF research groups — map their recent papers to your projects",
+      "Read 4 papers total (2 CV, 2 AI) — structured summaries in GitHub notes repo",
+      "🆕 MPI-INF professor research: Theobalt (3D/neural rendering), Schiele (object recognition), Slusallek (ray tracing AI) — read 2 papers each",
     ],
     resources: [
       {
@@ -324,7 +351,7 @@ const months = [
       "Week 4: RL basics (Q-learning) + identify MPI-INF groups + all 4 papers summarised",
     ],
     milestone:
-      "IELTS/TOEFL done + CV project on GitHub + 4 papers summarised (2 CV, 2 AI) + MPI-INF groups mapped",
+      "IELTS/TOEFL done + CV Project 3 (DETR object detection) on GitHub + 4 papers summarised + MPI-INF groups mapped",
   },
   {
     id: 6,
@@ -344,36 +371,37 @@ const months = [
       "GRE Verbal prep: 3–4 weeks of vocabulary + reading comprehension practice",
       "GRE Quant: 1 week of practice only — your math level already covers this",
       "Target: Quant 165+/170, Verbal 150+/170, AWA 4.0+",
-      "Polish GitHub: ViT, mini-GPT, GMM, CV project — clean READMEs + demo GIFs",
-      "Add W&B (Weights & Biases) experiment tracking to your best project",
-      "Enter one Kaggle CV competition — top 40% finish is worth mentioning",
-      "Research emails: read last 3 papers of 3 MPI-INF professors → write tailored emails",
-      "Draft SOP — two versions: one for Visual Computing, one for DSAI",
+      "Polish GitHub: CV Project 1 (ViT), CV Project 2 (U-Net), CV Project 3 (DETR), mini-GPT, GMM — READMEs + demo GIFs",
+      "Add W&B (Weights & Biases) experiment tracking to your best CV project",
+      "Enter one Kaggle CV competition — top 40% finish worth mentioning",
+      "🆕 Write Letter of Motivation — reference Theobalt/Schiele/Slusallek by name, cite specific papers, connect to your projects",
+      "🆕 fast.ai Practical Deep Learning Part 2 — explicitly accepted by Saarland as supplementary qualification",
+      "Request LORs formally — professor (academic) + SE manager (professional)",
     ],
     resources: [
-      {
-        name: "ETS GRE Official Guide (ets.org/gre) — only official prep counts",
-        type: "book",
-      },
+      { name: "ETS GRE Official Guide (ets.org/gre)", type: "book" },
       { name: "Magoosh GRE Vocabulary Flashcards (free app)", type: "course" },
       {
-        name: "MPI-INF research groups: gvv.mpi-inf.mpg.de, d2.mpi-inf.mpg.de",
+        name: "🎓 fast.ai – Practical Deep Learning Part 2 (free certificate)",
+        type: "course",
+      },
+      {
+        name: "MPI-INF: gvv.mpi-inf.mpg.de (Theobalt), d2.mpi-inf.mpg.de (Schiele)",
         type: "project",
       },
       {
         name: "Weights & Biases quickstart (wandb.ai/quickstart)",
         type: "project",
       },
-      { name: "r/GRE — score reports from Indian CS applicants", type: "book" },
     ],
     weekplan: [
-      "Week 1: GRE verbal prep intensive + polish GitHub projects + add W&B tracking",
-      "Week 2: GRE verbal + quant practice + Kaggle competition submission",
-      "Week 3: Take GRE exam + deep-read 3 papers per target professor",
-      "Week 4: Send professor emails + write both SOP drafts (Visual Computing + DSAI)",
+      "Week 1: GRE verbal prep + polish GitHub + start fast.ai Part 2",
+      "Week 2: GRE verbal + quant mock tests + Kaggle CV submission + W&B tracking added",
+      "Week 3: Take GRE exam + write Letter of Motivation (Visual Computing draft)",
+      "Week 4: Request LORs formally + Letter of Motivation (DSAI draft) + fast.ai Part 2 done",
     ],
     milestone:
-      "GRE taken (score in 8–10 days) + professor emails sent + two SOP drafts done",
+      "GRE taken + LoM both drafts done + LORs requested + fast.ai Part 2 certificate + 3 CV projects polished",
   },
   {
     id: 7,
